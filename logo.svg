@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- VidFetch mark: blue tile, white down-arrow dropping into a tray -->
+  <rect x="0" y="0" width="128" height="128" rx="28" ry="28" fill="#2563eb"/>
+  <!-- arrow shaft -->
+  <rect x="54" y="20" width="20" height="34" rx="4" fill="#ffffff"/>
+  <!-- arrow head -->
+  <path d="M40 48 L88 48 L64 78 Z" fill="#ffffff"/>
+  <!-- tray -->
+  <rect x="34" y="96" width="60" height="12" rx="6" fill="#ffffff"/>
+</svg>
