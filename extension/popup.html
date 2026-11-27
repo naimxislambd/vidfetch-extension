@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>VidFetch</title>
+<style>
+  :root {
+    --blue: #2563eb;
+    --blue-hover: #1d4ed8;
+    --bg: #ffffff;
+    --fg: #0f0f0f;
+    --muted: #606060;
+    --line: rgba(0, 0, 0, 0.12);
+    --chip: rgba(0, 0, 0, 0.06);
+    --chip-hover: rgba(0, 0, 0, 0.12);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1f1f1f;
+      --fg: #f1f1f1;
+      --muted: #aaaaaa;
+      --line: rgba(255, 255, 255, 0.16);
+      --chip: rgba(255, 255, 255, 0.12);
+      --chip-hover: rgba(255, 255, 255, 0.2);
+    }
+  }
+  * { box-sizing: border-box; }
+  body { width: 360px; margin: 0; padding: 14px; background: var(--bg); color: var(--fg); font: 13px/1.45 "Roboto", "Segoe UI", system-ui, sans-serif; }
+  header { display: flex; align-items: center; gap: 9px; margin-bottom: 13px; }
+  header svg { display: block; border-radius: 7px; flex: 0 0 auto; }
+  header strong { display: block; font-size: 14px; }
+  header small { color: var(--muted); font-size: 11px; }
+  .field { display: block; margin-bottom: 10px; }
+  .field > span { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  input[type="url"] { width: 100%; padding: 8px 10px; font: inherit; color: var(--fg); background: var(--chip); border: 1px solid var(--line); border-radius: 8px; outline: none; }
+  input[type="url"]:focus { border-color: var(--blue); }
+  input[type="url"]::placeholder { color: var(--muted); }
+  .row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+  .seg { display: flex; gap: 3px; padding: 3px; background: var(--chip); border-radius: 9px; flex: 0 0 auto; }
+  .seg button { font: inherit; font-weight: 600; font-size: 12px; padding: 5px 12px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); cursor: pointer; }
+  .seg button.on { background: var(--blue); color: #fff; }
+  select { flex: 1 1 auto; min-width: 0; padding: 7px 8px; font: inherit; font-size: 12px; font-weight: 600; color: var(--fg); background: var(--chip); border: 1px solid var(--line); border-radius: 8px; cursor: pointer; text-align: center; }
+  select:disabled { opacity: 0.4; cursor: default; }
+  #audiofmt { flex: 0 0 auto; }
+  .opts { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; font-size: 12.5px; }
+  .opts label { display: flex; gap: 7px; align-items: flex-start; cursor: pointer; color: var(--fg); }
+  .opts input { margin-top: 2px; accent-color: var(--blue); }
+  .opts small { color: var(--muted); display: block; }
+  #go { width: 100%; padding: 9px; font: inherit; font-weight: 700; font-size: 13px; color: #fff; background: var(--blue); border: 0; border-radius: 9px; cursor: pointer; }
+  #go:hover { background: var(--blue-hover); }
+  #go:disabled { opacity: 0.55; cursor: progress; }
+  .status { margin-top: 12px; }
+  .status[hidden] { display: none; }
+  .bar { height: 4px; border-radius: 2px; background: var(--chip); overflow: hidden; margin-bottom: 7px; }
+  .bar i { display: block; height: 100%; width: 0; background: var(--blue); transition: width 0.3s ease; }
+  .bar.indeterminate i { width: 35%; animation: slide 1.1s ease-in-out infinite; }
+  @keyframes slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(300%); } }
+  #msg { margin: 0; font-size: 12px; color: var(--muted); word-break: break-word; }
+  #msg.ok { color: #1a7f37; }
+  #msg.err { color: #c02626; }
+  .hist { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 10px; }
+  .hist-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .hist-head strong { font-size: 12px; }
+  .hist-head .mini { display: flex; gap: 6px; }
+  .mini button { font: inherit; font-size: 11px; font-weight: 600; padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--chip); color: var(--fg); cursor: pointer; }
+  .mini button:hover { background: var(--chip-hover); }
+  #history { list-style: none; margin: 0; padding: 0; max-height: 150px; overflow-y: auto; }
+  #history li { font-size: 12px; padding: 5px 0; border-bottom: 1px solid var(--line); word-break: break-word; }
+  #history li:last-child { border-bottom: 0; }
+  #history .hmeta { color: var(--muted); font-size: 11px; }
+  #history .hempty { color: var(--muted); }
+  .hint { margin: 10px 0 0; font-size: 11px; line-height: 1.4; color: var(--muted); }
+  .hint a { color: var(--blue); }
+</style>
+</head>
+<body>
+  <header>
+    <svg viewBox="0 0 128 128" width="26" height="26" aria-hidden="true">
+      <rect width="128" height="128" rx="28" fill="#2563eb"/>
+      <rect x="54" y="20" width="20" height="34" rx="4" fill="#fff"/>
+      <path d="M40 48 L88 48 L64 78 Z" fill="#fff"/>
+      <rect x="34" y="96" width="60" height="12" rx="6" fill="#fff"/>
+    </svg>
+    <div>
+      <strong>VidFetch</strong>
+      <small id="ver">YouTube · Facebook · TikTok · Instagram · 1800+ sites</small>
+    </div>
+  </header>
+
+  <label class="field" for="url">
+    <span>Link</span>
+    <input id="url" type="url" spellcheck="false" autocomplete="off"
+           placeholder="Paste any link — YouTube, Facebook, Instagram, TikTok…">
+  </label>
+
+  <div class="row">
+    <div class="seg" id="seg" role="group" aria-label="Format">
+      <button type="button" data-fmt="mp3" class="on">Audio</button>
+      <button type="button" data-fmt="mp4">Video</button>
+      <button type="button" data-fmt="thumb">Thumbnail</button>
+    </div>
+    <select id="audiofmt" aria-label="Audio format">
+      <option value="mp3">MP3</option>
+      <option value="m4a">M4A</option>
+      <option value="wav">WAV</option>
+      <option value="flac">FLAC</option>
+    </select>
+    <select id="quality" aria-label="Quality"></select>
+  </div>
+
+  <div class="opts">
+    <label><input type="checkbox" id="playlist"><span>Full playlist / channel<small>Downloads every video in the playlist, into its own folder. Leave off for a single video.</small></span></label>
+    <label hidden><input type="checkbox" id="thumbnail"><span>Also save thumbnail<small>Saves the cover image as a .jpg next to the file.</small></span></label>
+    <label><input type="checkbox" id="subtitles"><span>Also save subtitles<small>Saves English + Bangla subtitles as .srt when available.</small></span></label>
+  </div>
+
+  <button id="go">Grab</button>
+
+  <div class="status" id="status" hidden>
+    <div class="bar" id="bar"><i id="fill"></i></div>
+    <p id="msg"></p>
+  </div>
+
+  <div class="hist">
+    <div class="hist-head">
+      <strong>Recent downloads</strong>
+      <span class="mini">
+        <button type="button" id="openfolder">Open folder</button>
+        <button type="button" id="clearhist">Clear</button>
+      </span>
+    </div>
+    <ul id="history"><li class="hempty">No downloads yet.</li></ul>
+  </div>
+
+  <p class="hint">
+    Saves to the folder you picked in
+    <a href="http://127.0.0.1:8766/setup" target="_blank" rel="noreferrer">setup</a>.
+    The helper must be running.
+  </p>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,309 @@
+/* style.css - blend with YouTube's own chrome in both themes
+ *
+ * NOTE: do not borrow YouTube's --yt-spec-* custom properties here.
+ * They are not guaranteed to resolve inside an injected element, and when
+ * they fail the fallback is dark-on-dark - which made the MP4 chip invisible
+ * on the dark theme. Every colour below is explicit, and the dark-theme
+ * overrides hang off `html[dark]`, which is what YouTube sets on <html>.
+ */
+
+/* ---- container ---- */
+
+.ytg-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 6px;
+  vertical-align: middle;
+  flex: 0 0 auto;
+}
+
+.ytg-wrap--floating {
+  position: fixed;
+  right: 18px;
+  bottom: 84px;
+  z-index: 2200;
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  pointer-events: auto;
+}
+
+html[dark] .ytg-wrap--floating {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Shorts: sit on the left so we never cover YouTube's right-hand action stack */
+.ytg-wrap--shorts {
+  right: auto;
+  left: 16px;
+  bottom: 96px;
+  z-index: 2400;
+}
+
+/* ---- buttons ---- */
+
+.ytg-btn {
+  font-family: "Roboto", "YouTube Sans", system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.2px;
+  padding: 6px 11px;
+  border-radius: 16px;
+  cursor: pointer;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  pointer-events: auto;
+  transition: background 0.15s ease, transform 0.08s ease, opacity 0.15s ease;
+
+  /* light theme: dark text on a light grey chip */
+  color: #0f0f0f;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.ytg-btn:hover {
+  background: rgba(0, 0, 0, 0.16);
+}
+
+.ytg-btn:active {
+  transform: scale(0.97);
+}
+
+/* dark theme: light text on a lighter chip */
+html[dark] .ytg-btn {
+  color: #f1f1f1;
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+html[dark] .ytg-btn:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+/* MP3 - always the loud one. Declared last and with a doubled class so it
+   outranks the `html[dark] .ytg-btn` override above. */
+.ytg-btn.ytg-btn--primary {
+  color: #fff;
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+.ytg-btn.ytg-btn--primary:hover {
+  background: #1d4ed8;
+}
+
+html[dark] .ytg-btn.ytg-btn--primary {
+  color: #fff;
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+html[dark] .ytg-btn.ytg-btn--primary:hover {
+  background: #1d4ed8;
+}
+
+.ytg-btn.ytg-busy {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+/* ---- quality picker ---- */
+
+.ytg-select {
+  font-family: "Roboto", "YouTube Sans", system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 6px 6px;
+  border-radius: 16px;
+  cursor: pointer;
+  flex: 0 0 auto;
+  pointer-events: auto;
+  appearance: none;
+  -webkit-appearance: none;
+  text-align: center;
+  max-width: 108px;
+
+  color: #0f0f0f;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.ytg-select:hover {
+  background: rgba(0, 0, 0, 0.16);
+}
+
+html[dark] .ytg-select {
+  color: #f1f1f1;
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+html[dark] .ytg-select:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.ytg-select:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 1px;
+}
+
+.ytg-select option {
+  color: #0f0f0f;
+  background: #fff;
+  font-weight: 500;
+}
+
+/* ---- toast ---- */
+
+.ytg-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 32px;
+  transform: translate(-50%, 14px);
+  z-index: 3000;
+  max-width: min(560px, 86vw);
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-family: "Roboto", system-ui, sans-serif;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: #fff;
+  background: #212121;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.32);
+  opacity: 0;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  pointer-events: none;
+  word-break: break-word;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ytg-toast__mark {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+.ytg-toast__mark svg {
+  display: block;
+  border-radius: 5px;
+}
+
+.ytg-toast__text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ytg-toast--in {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.ytg-toast--ok {
+  background: #1a7f37;
+}
+
+.ytg-toast--error {
+  background: #c02626;
+}
+
+/* ---- VidFetch 1.2.0: single icon beside Like + dropdown menu ---- */
+.ytg-wrap { position: relative; }
+.ytg-icon-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%;
+  background: #2563eb; cursor: pointer; flex: 0 0 auto;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  transition: background 0.15s ease, transform 0.08s ease;
+}
+.ytg-icon-btn:hover { background: #1d4ed8; }
+.ytg-icon-btn:active { transform: scale(0.94); }
+.ytg-icon-btn.open { background: #1e40af; outline: 2px solid #93c5fd; outline-offset: 1px; }
+.ytg-icon-btn svg { display: block; width: 20px; height: 20px; border-radius: 5px; }
+
+.ytg-menu {
+  display: none;
+  position: fixed; top: 0; left: 0; z-index: 2147483000;
+  width: 280px; padding: 14px;
+  font-family: "Roboto", "YouTube Sans", system-ui, sans-serif;
+  font-size: 13px; line-height: 1.45; text-align: left;
+  color: #0f0f0f; background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28);
+}
+.ytg-menu.open { display: block; }
+html[dark] .ytg-menu { color: #f1f1f1; background: #212121; border-color: rgba(255, 255, 255, 0.16); }
+/* Floating pill (Shorts / social): menu opens upward, above the pill. */
+.ytg-wrap--floating .ytg-menu { top: auto; bottom: 48px; left: auto; right: 0; }
+.ytg-wrap--shorts .ytg-menu { left: 0; right: auto; }
+.ytg-menu-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.ytg-menu-head strong { flex: 1; font-size: 14px; }
+.ytg-menu-mark { display: flex; }
+.ytg-menu-mark svg { display: block; width: 22px; height: 22px; border-radius: 5px; }
+.ytg-menu-close {
+  border: 0; background: transparent; cursor: pointer;
+  font-size: 13px; color: #606060; padding: 4px 6px; border-radius: 6px;
+}
+html[dark] .ytg-menu-close { color: #aaa; }
+.ytg-menu-seg { display: flex; gap: 3px; padding: 3px; background: rgba(0, 0, 0, 0.06); border-radius: 9px; margin-bottom: 12px; }
+html[dark] .ytg-menu-seg { background: rgba(255, 255, 255, 0.12); }
+.ytg-menu-seg button {
+  flex: 1; font: inherit; font-weight: 600; font-size: 12px; padding: 6px 10px;
+  border: 0; border-radius: 7px; background: transparent; color: #606060; cursor: pointer;
+}
+html[dark] .ytg-menu-seg button { color: #aaa; }
+.ytg-menu-seg button.on { background: #2563eb; color: #fff; }
+.ytg-menu-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.ytg-menu-label { flex: 0 0 96px; font-size: 12px; font-weight: 600; color: #606060; }
+html[dark] .ytg-menu-label { color: #aaa; }
+.ytg-menu-select {
+  flex: 1; min-width: 0; padding: 7px 8px; font: inherit; font-size: 12px; font-weight: 600;
+  color: #0f0f0f; background: rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 8px; cursor: pointer; text-align: center;
+}
+html[dark] .ytg-menu-select { color: #f1f1f1; background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.16); }
+.ytg-menu-select:disabled { opacity: 0.4; cursor: default; }
+.ytg-menu-select option { color: #0f0f0f; background: #fff; }
+.ytg-menu-opts { display: flex; flex-direction: column; gap: 8px; margin: 2px 0 12px; }
+.ytg-menu-check { display: flex; gap: 8px; align-items: flex-start; cursor: pointer; font-size: 12.5px; }
+.ytg-menu-check input { margin-top: 2px; accent-color: #2563eb; }
+.ytg-menu-check-label { display: block; font-weight: 600; }
+.ytg-menu-check small { display: block; color: #606060; font-size: 11px; line-height: 1.4; }
+html[dark] .ytg-menu-check small { color: #aaa; }
+.ytg-menu-go {
+  width: 100%; padding: 10px; font: inherit; font-weight: 700; font-size: 13px;
+  color: #fff; background: #2563eb; border: 0; border-radius: 9px; cursor: pointer;
+}
+.ytg-menu-go:hover { background: #1d4ed8; }
+.ytg-menu-go:disabled { opacity: 0.55; cursor: progress; }
+.ytg-menu-status { margin-top: 10px; font-size: 12px; color: #606060; word-break: break-word; min-height: 0; }
+.ytg-menu-status:empty { display: none; }
+html[dark] .ytg-menu-status { color: #aaa; }
+.ytg-menu-status--ok { color: #1a7f37; }
+.ytg-menu-status--err { color: #c02626; }
+
+/* ---- VidFetch 1.1.0: playlist toggle + social floating pill ---- */
+.ytg-playlist {
+  font-family: "Roboto", "YouTube Sans", system-ui, sans-serif;
+  font-size: 12px; font-weight: 600; line-height: 1; padding: 6px 10px;
+  border-radius: 16px; cursor: pointer; flex: 0 0 auto; white-space: nowrap;
+  color: #0f0f0f; background: rgba(0, 0, 0, 0.08); border: 1px solid rgba(0, 0, 0, 0.1);
+}
+html[dark] .ytg-playlist { color: #f1f1f1; background: rgba(255, 255, 255, 0.14); border-color: rgba(255, 255, 255, 0.16); }
+.ytg-playlist.on { color: #fff; background: #2563eb; border-color: #2563eb; }
+.ytg-wrap--social {
+  right: 18px; bottom: 24px;
+  background: rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(37, 99, 235, 0.35);
+}
+
+/* ---- VidFetch 1.4.1: sit inline with YouTube's round action buttons ---- */
+.ytg-wrap { margin-left: 0; height: 36px; }
+.ytg-icon-btn { width: 36px; height: 36px; min-width: 36px; }

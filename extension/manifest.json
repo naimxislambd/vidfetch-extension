@@ -1,0 +1,59 @@
+{
+  "manifest_version": 3,
+  "name": "VidFetch",
+  "version": "1.4.4",
+  "description": "One VidFetch icon beside the Like button on YouTube watch pages only - click it for Audio, Video or Thumbnail download. No floating pill anywhere. Local only, powered by your yt-dlp helper.",
+  "minimum_chrome_version": "102",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "VidFetch",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "permissions": [
+    "storage",
+    "activeTab",
+    "nativeMessaging"
+  ],
+  "host_permissions": [
+    "*://*.youtube.com/*",
+    "*://*.youtu.be/*",
+    "*://*.facebook.com/*",
+    "*://*.fb.watch/*",
+    "*://*.instagram.com/*",
+    "*://*.tiktok.com/*",
+    "*://*.x.com/*",
+    "*://*.twitter.com/*",
+    "http://127.0.0.1:8766/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.youtube.com/*",
+        "*://*.youtu.be/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "style.css"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvsOZmpUd/Pw/5GWU5gdS9v3uvl9DHbHca/uY09YW+E590E+7Jq22DM2bMh1LhTJEUp/HA943aPNayHTsTCx1BKYfyNQ4hgebkF+j/YIzsMF30cSvmzqKzPMWqrUEX0ijIBtVQPe4EvHxpo4ih3Bpj+YO9VfNlez8wFYpRdojMyKHXRmduMh5B76CrFmOQ8qmJR9Oslzn1e1yxEwYniAzHiMjDsW2YHxtz+vbg/n4TyR4VGRe+PWuma2P2MUdUPl57Jgzv+aq/qHNOjyzozT0YENU6XYfZBsMwPkIyfOx4WRLDXNVE7X/djTRHK4Khl0QjGepkNPdX0+cTq3Nyujk6wIDAQAB"
+}
